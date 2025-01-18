@@ -1,0 +1,62 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model RateCalculationModel
+@{
+    ViewBag.Title = "Rate Calculation";
+}
+
+<h2>Rate Calculation</h2>
+
+<!-- Form to enter Rate per Hour and Number of Hours -->
+<div class="form-group">
+    <label for="ratePerHour">Rate per Hour</label>
+    <input type="number" id="ratePerHour" name="RatePerHour" class="form-control" value="@Model.RatePerHour" step="0.01" />
+</div>
+
+<div class="form-group">
+    <label for="numberOfHours">Number of Hours</label>
+    <input type="number" id="numberOfHours" name="NumberOfHours" class="form-control" value="@Model.NumberOfHours" />
+</div>
+
+<!-- Display the calculated Total -->
+<div class="form-group">
+    <label for="total">Total</label>
+    <input type="text" id="total" class="form-control" value="@Model.Total" readonly />
+</div>
+
+<!-- Include jQuery for AJAX -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Bind change event to the input fields
+        $('#ratePerHour, #numberOfHours').on('input', function () {
+            var ratePerHour = parseFloat($('#ratePerHour').val()) || 0;
+            var numberOfHours = parseFloat($('#numberOfHours').val()) || 0;
+
+            // Create an object to send to the server
+            var data = {
+                RatePerHour: ratePerHour,
+                NumberOfHours: numberOfHours
+            };
+
+            // Make an AJAX call to calculate the total
+            $.ajax({
+                url: '@Url.Action("CalculateTotal", "RateCalculation")',
+                type: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                success: function (response) {
+                    // Update the Total field with the calculated value
+                    $('#total').val(response.Total.toFixed(2));
+                },
+                error: function () {
+                    alert("Error calculating total.");
+                }
+            });
+        });
+    });
+</script>
