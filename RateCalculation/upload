@@ -1,0 +1,43 @@
+ public async Task<Tuple<int, string>> UploadAnnouncementCoverImage(IFormFile coverImage, long announcementId)
+ {
+     /*0 = failed, 1 = success, 2 = User not exists*/
+     string FilePath = string.Empty;
+
+     int iStatus = 0;
+
+     try
+     {
+         Announcement announcement = await _dbMain.Announcements.Where(e => e.Id == announcementId).SingleOrDefaultAsync();
+
+         if (announcement == null) return new Tuple<int, string>(2, FilePath);
+
+         string FileName = string.Format("CoverImage_{0}{1}", DateTime.Now.ToString("yyyyMMddHHss"), Path.GetExtension(coverImage.FileName));
+         string RootPath = Path.Combine("Uploads", "Announcements", announcementId.ToString());
+
+         if (!Directory.Exists(Path.Combine("wwwroot", RootPath))) Directory.CreateDirectory(Path.Combine("wwwroot", RootPath));
+
+         FilePath = Path.Combine(RootPath, FileName);
+
+         //coverImage.CopyTo(new FileStream(Path.Combine("wwwroot", FilePath), FileMode.Create));
+         using (Stream fileStream = new FileStream(Path.Combine("wwwroot", FilePath), FileMode.Create, FileAccess.Write))
+         {
+             coverImage.CopyTo(fileStream);
+         }
+
+         announcement.CoverImage = FileName;
+
+         _dbMain.Announcements.Update(announcement);
+
+         _dbMain.SaveChanges();
+
+         iStatus = 1;
+     }
+     catch (Exception ex)
+     {
+         iStatus = 0;
+         FilePath = string.Empty;
+         _logger.LogError(ex, "UploadAnnouncementCoverImage");
+     }
+
+     return new Tuple<int, string>(iStatus, FilePath);
+ }
