@@ -1,0 +1,137 @@
+﻿@model StudentQualificationViewModel
+
+@{
+    ViewData["Title"] = "Create Student with Qualifications";
+}
+
+<h1>Create Student with Qualifications</h1>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label for="FirstName">First Name</label>
+        <input type="text" class="form-control" id="FirstName" name="Student.FirstName" value="@Model.Student.FirstName" />
+    </div>
+
+    <div class="form-group">
+        <label for="LastName">Last Name</label>
+        <input type="text" class="form-control" id="LastName" name="Student.LastName" value="@Model.Student.LastName" />
+    </div>
+
+    <div class="form-group">
+        <label for="Email">Email</label>
+        <input type="email" class="form-control" id="Email" name="Student.Email" value="@Model.Student.Email" />
+    </div>
+
+    <div class="form-group">
+        <label for="PhoneNumber">Phone Number</label>
+        <input type="text" class="form-control" id="PhoneNumber" name="Student.PhoneNumber" value="@Model.Student.PhoneNumber" />
+    </div>
+
+    <!-- New Fields -->
+    <div class="form-group">
+        <label for="Age">Age</label>
+        <input type="number" class="form-control" id="Age" name="Student.Age" value="@Model.Student.Age" />
+    </div>
+
+    <div class="form-group">
+        <label for="DateOfBirth">Date of Birth</label>
+        <input type="date" class="form-control" id="DateOfBirth" name="Student.DateOfBirth" value="@Model.Student.DateOfBirth?.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="form-group">
+        <label>Gender</label>
+        <div>
+            <label>
+                <input type="radio" name="Student.Gender" value="Male" @(Model.Student.Gender == "Male" ? "checked" : "") />
+                Male
+            </label>
+            <label>
+                <input type="radio" name="Student.Gender" value="Female" @(Model.Student.Gender == "Female" ? "checked" : "") />
+                Female
+            </label>
+            <label>
+                <input type="radio" name="Student.Gender" value="Other" @(Model.Student.Gender == "Other" ? "checked" : "") />
+                Other
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="Username">Username</label>
+        <input type="text" class="form-control" id="Username" name="Student.Username" value="@Model.Student.Username" />
+    </div>
+
+    <div class="form-group">
+        <label for="Password">Password</label>
+        <input type="password" class="form-control" id="Password" name="Student.Password" value="@Model.Student.Password" />
+    </div>
+
+    <!-- Certification Section -->
+    <h4 class="mt-5">Certifications</h4>
+
+    <div id="certificationsContainer">
+        <!-- Existing certifications will go here -->
+        @for (int i = 0; i < Model.Qualifications.Count; i++)
+        {
+            <div class="certificationSection border p-3 mb-3">
+                <h5>Certification @i</h5>
+                <div class="form-group">
+                    <label for="Course_@i">Course</label>
+                    <input type="text" class="form-control" id="Course_@i" name="Qualifications[@i].Course" value="@Model.Qualifications[i].Course" required />
+                </div>
+                <div class="form-group">
+                    <label for="Percentage_@i">Percentage</label>
+                    <input type="number" class="form-control" id="Percentage_@i" name="Qualifications[@i].Percentage" value="@Model.Qualifications[i].Percentage" />
+                </div>
+                <div class="form-group">
+                    <label for="YearOfPassing_@i">Year of Passing</label>
+                    <input type="number" class="form-control" id="YearOfPassing_@i" name="Qualifications[@i].YearOfPassing" value="@Model.Qualifications[i].YearOfPassing" />
+                </div>
+                <div class="form-group">
+                    <label for="University_@i">University</label>
+                    <input type="text" class="form-control" id="University_@i" name="Qualifications[@i].University" value="@Model.Qualifications[i].University" />
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Add Certification Button -->
+    <button type="button" class="btn btn-primary" id="addCertificationBtn">Add Certification</button>
+
+    <br /><br />
+
+    <button type="submit" class="btn btn-success">Save Student</button>
+</form>
+</div>
+
+<script>
+    document.getElementById('addCertificationBtn').addEventListener('click', function () {
+        const certificationsContainer = document.getElementById('certificationsContainer');
+        const certificationCount = certificationsContainer.children.length;
+
+        const newCertificationDiv = document.createElement('div');
+        newCertificationDiv.classList.add('certificationSection', 'border', 'p-3', 'mb-3');
+
+        newCertificationDiv.innerHTML = `
+                <h5>Certification ${certificationCount + 1}</h5>
+                <div class="form-group">
+                    <label for="Course_${certificationCount}">Course</label>
+                    <input type="text" class="form-control" id="Course_${certificationCount}" name="Qualifications[${certificationCount}].Course" required />
+                </div>
+                <div class="form-group">
+                    <label for="Percentage_${certificationCount}">Percentage</label>
+                    <input type="number" class="form-control" id="Percentage_${certificationCount}" name="Qualifications[${certificationCount}].Percentage" />
+                </div>
+                <div class="form-group">
+                    <label for="YearOfPassing_${certificationCount}">Year of Passing</label>
+                    <input type="number" class="form-control" id="YearOfPassing_${certificationCount}" name="Qualifications[${certificationCount}].YearOfPassing" />
+                </div>
+                <div class="form-group">
+                    <label for="University_${certificationCount}">University</label>
+                    <input type="text" class="form-control" id="University_${certificationCount}" name="Qualifications[${certificationCount}].University" />
+                </div>
+            `;
+
+        certificationsContainer.appendChild(newCertificationDiv);
+    });
+</script>

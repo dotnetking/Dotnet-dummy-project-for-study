@@ -1,0 +1,107 @@
+﻿@model List<StudentQualificationViewModel>
+
+@{
+    ViewData["Title"] = "Student List with Filters";
+}
+
+<div class="container mt-5">
+    <h2>@ViewData["Title"]</h2>
+
+    <!-- Filter Section -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="usernameFilter">Filter by Username</label>
+                <select id="usernameFilter" class="form-control">
+                    <option value="">All Users</option>
+                    @foreach (var student in Model.Select(s => s.Student.Username).Distinct())
+                    {
+                        <option value="@student">@student</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="emailFilter">Filter by Email</label>
+                <select id="emailFilter" class="form-control">
+                    <option value="">All Emails</option>
+                    @foreach (var student in Model.Select(s => s.Student.Email).Distinct())
+                    {
+                        <option value="@student">@student</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="search">Search</label>
+                <input type="text" id="search" class="form-control" placeholder="Search by Name" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Student List Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="studentList">
+            @foreach (var student in Model)
+            {
+                <tr>
+                    <td>@student.Student.FirstName</td>
+                    <td>@student.Student.LastName</td>
+                    <td>@student.Student.Email</td>
+                    <td>@student.Student.Username</td>
+                    <td>
+                        <a href="@Url.Action("Details", "Student", new { id = student.Student.Id })" class="btn btn-info btn-sm">Details</a>
+                        <a href="@Url.Action("Edit", "Student", new { id = student.Student.Id })" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="@Url.Action("Delete", "Student", new { id = student.Student.Id })" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Filter by Username and Email
+    document.getElementById('usernameFilter').addEventListener('change', filterList);
+    document.getElementById('emailFilter').addEventListener('change', filterList);
+    document.getElementById('search').addEventListener('input', filterList);
+
+    function filterList() {
+        const usernameFilter = document.getElementById('usernameFilter').value.toLowerCase();
+        const emailFilter = document.getElementById('emailFilter').value.toLowerCase();
+        const searchQuery = document.getElementById('search').value.toLowerCase();
+
+        const rows = document.querySelectorAll('#studentList tr');
+
+        rows.forEach(row => {
+            const username = row.cells[3].innerText.toLowerCase();
+            const email = row.cells[2].innerText.toLowerCase();
+            const firstName = row.cells[0].innerText.toLowerCase();
+            const lastName = row.cells[1].innerText.toLowerCase();
+
+            // Filter logic for username, email and search
+            const matchesUsername = username.includes(usernameFilter);
+            const matchesEmail = email.includes(emailFilter);
+            const matchesSearch = firstName.includes(searchQuery) || lastName.includes(searchQuery);
+
+            if (matchesUsername && matchesEmail && matchesSearch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+
+
